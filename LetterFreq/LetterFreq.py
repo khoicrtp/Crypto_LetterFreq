@@ -20,7 +20,7 @@ def defineLetterList(cipher):
     return res
 
 
-def replace(cipher):
+def userManualReplace(cipher):
     res = ""
     letterList = defineLetterList(cipher)
     expectedLetters = copy.deepcopy(letterList)
@@ -39,15 +39,11 @@ def replace(cipher):
     print("expected output: ", res)
     return res
 
-# replace(cipher)
-
-
 standardLetterFreq = ['e', 't', 'a', 'o', 'i',
                       'n', 's', 'h', 'r', 'd',
                       'l', 'c', 'u', 'm', 'w',
                       'f', 'g', 'y', 'p', 'b',
                       'v', 'k', 'j', 'x', 'q', 'z']
-
 
 def countFreq(cipher, letter):
     count = 0
@@ -89,6 +85,29 @@ def get_nth_key(dictionary, n=0):
             return key
     raise IndexError("dictionary index out of range")
 
+def createEmptyArray(n):
+    res=[]
+    for i in range(0,n):
+        res.append(0)
+    return res
+
+def collectWordList(a):
+    wordList=[]
+    temp=""
+    for i in range(0,len(a)):
+        if(a[i]!=" " and a[i]!="0"):
+            temp+=str(a[i])
+        else:
+            wordList.append(temp)
+            temp=""
+    return wordList
+
+def checkEachWordIsLegit(a):
+    wordList=collectWordList(a)
+    for i in range(len(a)):
+        if(checkValidWord(a[i])==False):
+            return False
+    return True
 
 def cipherLetterFreqSolve(cipher):
     letterDict = defineLetterDict(cipher)
@@ -101,23 +120,104 @@ def cipherLetterFreqSolve(cipher):
         else:
             expectedLetterDict[letterDict[i][0]] = letterDict[i][0]
 
-    res = toArray(cipher)
+    res=createEmptyArray(len(cipher))
+    print(res)
+    
+    usedWord=[]
 
     for i in range(0, len(res)):
-        for j in range(len(expectedLetterDict)):
+        for k in range(len(expectedLetterDict)):
+            j=k
             if(cipher[i] == letterDict[j][0]):
                 key = get_nth_key(expectedLetterDict, j)
                 res[i] = expectedLetterDict[key]
+                while(checkEachWordIsLegit(res)==False):
+                    if(j==len(expectedLetterDict)):
+                        print("CANT FIND SOLUTION")
+                        return
+                    j+=1
+                    key = get_nth_key(expectedLetterDict, j)
+                    res[i] = expectedLetterDict[key]
+                usedWord.append(expectedLetterDict[key])
                 break
     result = toString(res)
 
     return result
 
+standardLetterFreq = ['e', 't', 'a', 'o', 'i',
+                      'n', 's', 'h', 'r', 'd',
+                      'l', 'c', 'u', 'm', 'w',
+                      'f', 'g', 'y', 'p', 'b',
+                      'v', 'k', 'j', 'x', 'q', 'z']
+
+def replaceLetter(res,letter,toLetter):
+    for i in range(len(res)):
+        if res[i]==letter:
+            res[i]=toLetter
+    
+    if(checkEachWordIsLegit(res)==True):
+        return res
+    else: return 0
+
+def recurReplace(res, wordList, index):
+    tempWordList=wordList
+    if(len(wordList)==0):
+        return res
+    toLetter=tempWordList.pop()
+    newRes=replaceLetter(res, letter, toLetter)
+    if(newRes!=0):
+        return recurReplace(res, tempWordList, index)
+    
+def tryReplace(res,i,usedLetter):
+    flag=0
+    j=0
+    while(flag==0):
+        while(standardLetterFreq[j] in usedLetter):
+            j+=1
+        res[i]=standardLetterFreq[j]
+        #wordList=collectWordList(res)
+        if(checkEachWordIsLegit(res)):
+            flag=1
+            usedLetter.append()
+
+def createAbstractArray(cipher):
+    res=[]
+    for i in range(0,len(cipher)):
+        if(cipher[i].isalpha()==True):
+            res.append("*")
+        else:
+            res.append(cipher[i])
+    return res
+
+    
+    
+    
+
+def cipherLetterFreqSolve2(cipher):
+    letterDict = defineLetterDict(cipher)
+    j = 0
+    res=toArray(cipher)
+    usedLetter=[]
+    for i in range(len(letterDict)):
+        if(letterDict[i][0].isalpha() == True):
+            #expectedLetterDict[letterDict[i][0]] = standardLetterFreq[j]
+            res[i]=standardLetterFreq[j]
+            if(checkEachWordIsLegit(res)==False):
+                k=j
+                while(checkEachWordIsLegit(res)==False):
+                    k+=1
+                    res[i]=standardLetterFreq[k]
+                usedLetter=standardLetterFreq[k]
+            j += 1
+        else:
+            expectedLetterDict[letterDict[i][0]] = letterDict[i][0]
+
+    return result
 
 print("CIPHER TEXT: ", cipher, "\n")
 
-print("DECODED OUTPUT: ", cipherLetterFreqSolve(cipher), "\n")
+#print("DECODED OUTPUT: ", cipherLetterFreqSolve(cipher), "\n")
 
-print("EXPECTED OUTPUT:", expectedResult)
+#print("EXPECTED OUTPUT:", expectedResult)
 
-print(checkValidWord("sui"))
+print(createAbstractArray(cipher))
