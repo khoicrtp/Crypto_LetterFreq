@@ -290,6 +290,9 @@ if __name__=='__main__':
     print("WORDLIST FREQ:", wordList)
     print("STANDARD LETTER FREQ:", standardLetterFreq)
     mode=int(input("CHOOSE MODE:\n1.Manual\n2.Automatic with pure frequency method\n3.Automatic with AI (Still bugging)\n"))
+    while(mode!=1 and mode!=2 and mode!=3):
+        print("PLEASE SELECT YOUR OPTION AGAIN")
+        mode=int(input())
     if mode==1:
         t2=threading.Thread(target=manualReplaceSolve, args=(cipher,))
         t2.start()
