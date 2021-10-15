@@ -55,7 +55,8 @@ def inputByFreq(cipher, letterList, expectedLetters):
             if (res[i].isalpha() == True):
                 if letterList[j]==res[i]:
                     temp = "Value for letter "+res[i]+": "
-                    expectedLetters[j] = input(temp)
+                    char = input(temp)
+                    expectedLetters[j] = char[0]
 
     return expectedLetters            
     

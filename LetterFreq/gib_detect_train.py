@@ -30,7 +30,7 @@ def train():
 
     # Count transitions from big text file, taken 
     # from http://norvig.com/spell-correct.html
-    for line in open('big.txt'):
+    for line in open('trainingData/big.txt'):
         for a, b in ngram(2, line):
             counts[pos[a]][pos[b]] += 1
 
@@ -46,8 +46,8 @@ def train():
 
     # Find the probability of generating a few arbitrarily choosen good and
     # bad phrases.
-    good_probs = [avg_transition_prob(l, counts) for l in open('good.txt')]
-    bad_probs = [avg_transition_prob(l, counts) for l in open('bad.txt')]
+    good_probs = [avg_transition_prob(l, counts) for l in open('trainingData/good.txt')]
+    bad_probs = [avg_transition_prob(l, counts) for l in open('trainingData/bad.txt')]
 
     # Assert that we actually are capable of detecting the junk.
     assert min(good_probs) > max(bad_probs)
