@@ -8,6 +8,7 @@ import threading
 import time
 import pickle
 import gib_detect_train
+from PIL import Image
 
 
 model_data = pickle.load(open('gib_model.pki', 'rb'))
@@ -72,11 +73,8 @@ def manualReplaceSolve(cipher):
             if(cipher[i] == letterList[j]):
                 res += expectedLetters[j]
                 break
-    print("CIPHER TEXT: ", cipher, "\n")
-
-    print("DECODED OUTPUT: ", res, "\n")
-
-    print("EXPECTED OUTPUT:", expectedResult)
+    print("CIPHER:  ", cipher, "\n")
+    print("DECODED: ", res, "\n")
     return res
 
 def countFreq(cipher, letter):
@@ -129,7 +127,8 @@ def cipherLetterFreqSolve(cipher):
                 res[i] = expectedLetterDict[key]
                 break
     result = toString(res)
-    print(result)
+    print("CIPHER: ", cipher)
+    print("DECODED:", result)
 
     return result
 
@@ -281,6 +280,10 @@ def crackByAI(cipher):
     deny = []
     Result=recurReplace(cipherArray, dummyArray, wordList, toWordList, deny)
     printResult(dummyArray)
+    
+def showPic():                                                                              
+    img = Image.open('freq.png')
+    img.show() 
 
 if __name__=='__main__':
     t1=threading.Thread(target=drawGraph, args=())
@@ -295,6 +298,8 @@ if __name__=='__main__':
         print("PLEASE SELECT YOUR OPTION AGAIN")
         mode=int(input())
     if mode==1:
+        t3=threading.Thread(target=showPic)
+        t3.start()
         t2=threading.Thread(target=manualReplaceSolve, args=(cipher,))
         t2.start()
     elif mode==2:
