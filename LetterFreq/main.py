@@ -202,7 +202,8 @@ def createDummyArray(cipher):
 def recurReplace(cipherArray, dummyArray, wordList, toWordList, deny, swapFrom, swapTo):
     if('*' not in dummyArray):
         return dummyArray
-    
+    if(cipherArray==0):
+        revertSwap(cipherArray, dummyArray, wordList, toWordList, deny)
     tempDeny=copy.deepcopy(deny)
     tempWordList = copy.deepcopy(wordList)
     tempToWordList = copy.deepcopy(toWordList)
@@ -284,6 +285,14 @@ def drawGraph():
     plt.ylabel("Frequency")
     plt.title("LETTER FREQUENCY")
     plt.show()
+
+def revertSwap(cipherArray, dummyArray, wordList, toWordList, deny):
+    changed=deny.pop()
+    for i in range(len(dummyArray)):
+        if(dummyArray[i]==changed):
+            dummyArray[i]=cipherArray[i]
+    return dummyArray[i]
+    
 
 def crackByAI(cipher):
     cipherArray = toArray(cipher)
