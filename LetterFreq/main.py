@@ -23,6 +23,10 @@ standardLetterFreq = ['e', 't', 'a', 'o', 'i',
                       'f', 'g', 'y', 'p', 'b',
                       'v', 'k', 'j', 'x', 'q', 'z']
 
+def appendArray(a, b):
+    for i in range(len(b)):
+        a.append(b[i])
+    return a
 
 def checkValidWord(word):
     model_mat = model_data['mat']
@@ -137,7 +141,10 @@ def cipherLetterFreqSolve(cipher):
 def checkValidWord(word):
     model_mat = model_data['mat']
     threshold = model_data['thresh']
-    return (gib_detect_train.avg_transition_prob(word, model_mat) > threshold)
+    res = (gib_detect_train.avg_transition_prob(word, model_mat) > threshold)
+    if res==False:
+        print(word,"is FALSE")
+    return res
 
 def collectWordList(a):
     wordList = []
@@ -155,9 +162,9 @@ def collectWordList(a):
 
 def checkEachWordIsLegit(a):
     wordList = collectWordList(a)
-    print("WORDLIST CHECK:", wordList)
+    #print("WORDLIST CHECK:", wordList)
     for i in range(0,len(wordList)):
-        print(wordList[i]," is:", checkValidWord(wordList[i]))
+        #print(wordList[i]," is:", checkValidWord(wordList[i]))
         if(checkValidWord(wordList[i]) == False):
             return False
     return True
@@ -192,10 +199,10 @@ def createDummyArray(cipher):
             a.append(cipher[i])
     return a
 
-def recurReplace(cipherArray, dummyArray, wordList, toWordList, deny):
+def recurReplace(cipherArray, dummyArray, wordList, toWordList, deny, swapFrom, swapTo):
     if('*' not in dummyArray):
         return dummyArray
-
+    
     tempDeny=copy.deepcopy(deny)
     tempWordList = copy.deepcopy(wordList)
     tempToWordList = copy.deepcopy(toWordList)
@@ -212,26 +219,32 @@ def recurReplace(cipherArray, dummyArray, wordList, toWordList, deny):
             cantReplaceFlag=1
             break
         toLetter = tempToWordList[i]
+    
     if cantReplaceFlag==1:
-        temp=wordList[0]
-        wordList[0]=wordList[1]
-        wordList[1]=temp
-        print("SWAPPED: ",wordList)
-        cantReplaceFlag=0
-        tempDeny=copy.deepcopy(deny)
-        return recurReplace(cipherArray, dummyArray, wordList, toWordList, deny)
+        for i in range(1, len(wordList)):
+            if wordList[i] not in swapTo:
+                swapToWordList=copy.deepcopy(wordList)
+                temp=swapToWordList[0]
+                swapToWordList[0]=swapToWordList[i]
+                swapToWordList[i]=temp
+                print("swapTo: ",swapToWordList)
+                cantReplaceFlag=0
+                tempDeny=copy.deepcopy(deny)
+                swapTo.append(swapToWordList[i])
+                return recurReplace(cipherArray, dummyArray, swapToWordList, toWordList, deny, swapFrom, swapTo)
+        
+        print("CANT FIND SOLUTION")
+        return 0
     tempToWordList.remove(toLetter)
 
     tempDummy = replaceLetter(cipherArray, dummyArray, letter, toLetter)
 
     if(tempDummy != 0):
-        tempDeny.append(toLetter)
-        print("DUMMY:", collectWordList(dummyArray), '\n')
-        return recurReplace(cipherArray, tempDummy, tempWordList, tempToWordList, tempDeny)
+        tempDeny.append(toLetter)  
+        return recurReplace(cipherArray, tempDummy, tempWordList, tempToWordList, tempDeny, swapFrom, swapTo)
     else:
         deny.append(toLetter)
-        print("DUMMY:", collectWordList(dummyArray), '\n')
-        return recurReplace(cipherArray, dummyArray, wordList, toWordList, deny)
+        return recurReplace(cipherArray, dummyArray, wordList, toWordList, deny, swapFrom, swapTo)
 
 def printResult(dummyArray):
     result=collectWordList(dummyArray)
@@ -278,7 +291,9 @@ def crackByAI(cipher):
     wordList = defineLetterDict(cipher)
     toWordList = standardLetterFreq
     deny = []
-    Result=recurReplace(cipherArray, dummyArray, wordList, toWordList, deny)
+    swapTo=[]
+    swapFrom=[]
+    Result=recurReplace(cipherArray, dummyArray, wordList, toWordList, deny, swapFrom, swapTo)
     printResult(dummyArray)
     
 def showPic():                                                                              
@@ -308,3 +323,6 @@ if __name__=='__main__':
     elif mode==3:
         t2=threading.Thread(target=crackByAI, args=(cipher,))
         t2.start()
+    
+    # manualReplaceSolve(cipher)
+    # crackByAI(cipher)

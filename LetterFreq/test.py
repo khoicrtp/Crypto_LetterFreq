@@ -175,15 +175,22 @@ def drawGraph(data):
     plt.title("LETTER FREQUENCY")
     plt.show()
 
-wordList = defineLetterDict(cipher)
-print("WORDLIST:", wordList)
-print(wordList[0][0])
-#drawGraph(wordList)
-cipherArray = toArray(cipher)
-dummyArray = createDummyArray(cipher)
-toWordList = standardLetterFreq
-deny = []
-Result=recurReplace(cipherArray, dummyArray, wordList, toWordList, deny)
+# wordList = defineLetterDict(cipher)
+# print("WORDLIST:", wordList)
+# print(wordList[0][0])
+# #drawGraph(wordList)
+# cipherArray = toArray(cipher)
+# dummyArray = createDummyArray(cipher)
+# toWordList = standardLetterFreq
+# deny = []
+# Result=recurReplace(cipherArray, dummyArray, wordList, toWordList, deny)
 
-printResult(dummyArray)
-
+#printResult(dummyArray)
+a=[1]
+a1=1
+b=[2,3,4,5]
+def appendArray(a, b):
+    for i in range(len(b)):
+        a.append(b[i])
+appendArray(a, b)
+print(a)
